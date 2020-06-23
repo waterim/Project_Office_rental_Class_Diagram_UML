@@ -8,6 +8,8 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -28,8 +30,28 @@ public class Location {
     @NotBlank
     private String building;
 
+    @OneToMany
+    private Set<Office> officeSet = new HashSet<>();
+
     public Location(@NotBlank String street, @NotBlank String building) {
         this.street = street;
         this.building = building;
+    }
+
+    public void addOffice(Office office) {
+        if (office == null)
+            throw new IllegalArgumentException("office must not be null");
+        if (!this.officeSet.contains(office) && !office.hasLocation()) {
+            officeSet.add(office);
+        }
+    }
+
+    public void removeOffice(Office office) {
+        if (office == null)
+            throw new IllegalArgumentException("office must not be null");
+        if (this.officeSet.contains(office)) {
+            officeSet.remove(office);
+            office.removeLocation();
+        }
     }
 }

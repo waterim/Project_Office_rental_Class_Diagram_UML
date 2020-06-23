@@ -33,11 +33,29 @@ public class Customer extends Person{
         return 0;
     }
 
+//    //XOR
+//    private Employee employee;
+//    private Owner owner;
+
     public Customer(@NotBlank(message = "Name can't be blank") String name, @NotBlank(message = "Surname can't be blank") String surname, @NotBlank(message = "Phone can't be blank") String phone, @NotNull(message = "Date of birth can't be blank") LocalDate dateOfBirth, int numberOfOffices, @NotBlank(message = "level of privilege can't be blank") int levelOfPrivilege) {
         super(name, surname, phone, dateOfBirth);
         this.numberOfOffices = numberOfOffices;
         this.levelOfPrivilege = levelOfPrivilege;
     }
+//    public Customer(@NotBlank(message = "Name can't be blank") String name, @NotBlank(message = "Surname can't be blank") String surname, @NotBlank(message = "Phone can't be blank") String phone,
+//                    @NotNull(message = "Date of birth can't be blank") LocalDate dateOfBirth, int numberOfOffices, @NotBlank(message = "level of privilege can't be blank") int levelOfPrivilege, Employee employee) {
+//        super(name, surname, phone, dateOfBirth);
+//        this.numberOfOffices = numberOfOffices;
+//        this.levelOfPrivilege = levelOfPrivilege;
+//        this.employee = employee;
+//    }
+//    public Customer(@NotBlank(message = "Name can't be blank") String name, @NotBlank(message = "Surname can't be blank") String surname, @NotBlank(message = "Phone can't be blank") String phone,
+//                    @NotNull(message = "Date of birth can't be blank") LocalDate dateOfBirth, int numberOfOffices, @NotBlank(message = "level of privilege can't be blank") int levelOfPrivilege, Owner owner) {
+//        super(name, surname, phone, dateOfBirth);
+//        this.numberOfOffices = numberOfOffices;
+//        this.levelOfPrivilege = levelOfPrivilege;
+//        this.owner = owner;
+//    }
 
     public void addRental(Rental rental){
         if (rental == null) {
@@ -67,5 +85,27 @@ public class Customer extends Person{
             rental.removeRental();
         }
     }
-
+//    public void setCustomer(Customer customer) throws Exception {
+//        if(this.owner != null){
+//            throw new Exception("Owner is already set!");
+//        }
+//        if(this.employee == employee) return;
+//        if(this.employee != null){
+//            this.employee.removeCustomer(this);
+//        }
+//        this.employee = employee;
+//        this.employee.addCustomer(this);
+//    }
+//
+//    public void setOwner(Owner owner) throws Exception{
+//        if(this.employee != null){
+//            throw new Exception("Employee is already set!");
+//        }
+//        if(this.owner == owner) return;
+//        if(this.owner != null){
+//            this.owner.removeCustomer(this);
+//        }
+//        this.owner = owner;
+//        this.owner.addCustomer(this);
+//    }
 }

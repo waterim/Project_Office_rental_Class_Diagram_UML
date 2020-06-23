@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Getter
@@ -23,21 +24,21 @@ public class Payment {
     @NotBlank
     private String method;
 
-    @NotBlank
+    @NotNull
     private int value;
 
     @ManyToOne
     private Invoice invoice;
 
 
-    public Payment(@NotBlank String method, @NotBlank int value) {
+    public Payment(@NotNull String method, @NotBlank int value) {
         this.method = method;
         this.value = value;
     }
 
     public void addInvoice(Invoice invoice){
-        invoice.addPayment(this);
         setInvoice(invoice);
+        invoice.addPayment(this);
     }
     public void removeInvoice(){
         if(this.invoice != null) {

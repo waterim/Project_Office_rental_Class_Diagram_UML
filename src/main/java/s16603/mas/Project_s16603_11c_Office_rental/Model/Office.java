@@ -7,14 +7,17 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+//@ToString
 @Table(name="office")
 public class Office {
 
@@ -25,18 +28,22 @@ public class Office {
     @NotBlank
     private String name;
 
-    @NotBlank
+    @NotNull
     private int price;
 
     @NotBlank
     private String description;
 
-    @OneToOne
-    private VirtualOffice virtualOffice;
-    @OneToOne
-    private OpenSpaceOffice openSpaceOffice;
-    @OneToOne
-    private HomeOffice homeOffice;
+//    @OneToOne
+//    private VirtualOffice virtualOffice;
+//    @OneToOne
+//    private OpenSpaceOffice openSpaceOffice;
+//    @OneToOne
+//    private HomeOffice homeOffice;
+
+    private int virtualVideoConversationSize;
+    private int openNumberOfSeats;
+    private int homeWorkingDaysPerWeek;
 
     @Enumerated(EnumType.STRING)
     private OfficeStatus officeStatus;
@@ -47,70 +54,98 @@ public class Office {
     @OneToOne
     private Invoice invoice;
 
-    public Office(@NotBlank String name, @NotBlank int price, @NotBlank String description,
-                  int virtualVideoConversationSize, int openNumberOfSeats, int homeWorkingDaysPerWeek, OfficeType officeType, OfficeStatus officeStatus) {
+    @ManyToMany
+    private Set<Owner> owners = new HashSet<>();
+
+    @ManyToMany
+    private Set<Owner> managedByOwners = new HashSet<>();
+
+    @ManyToOne
+    private Location location;
+
+    public Office(@NotBlank String name, @NotNull int price, @NotBlank String description,
+                  int virtualVideoConversationSize, int openNumberOfSeats, int homeWorkingDaysPerWeek,
+                  OfficeType officeType, OfficeStatus officeStatus, Location location) {
         this.name = name;
         this.price = price;
         this.description = description;
+        this.location = location;
+        this.location.addOffice(this);
 
         this.officeStatus = officeStatus;
+//        if(officeType == OfficeType.HOME){
+//            this.homeOffice = new HomeOffice(this, homeWorkingDaysPerWeek);
+//            this.virtualOffice = null;
+//            this.openSpaceOffice = null;
+//        }
+//        if(officeType == OfficeType.OPEN_SPACE){
+//            this.openSpaceOffice = new OpenSpaceOffice(this, openNumberOfSeats);
+//            this.virtualOffice = null;
+//            this.homeOffice = null;
+//        }
+//        if(officeType == OfficeType.VIRTUAL){
+//            this.virtualOffice = new VirtualOffice(this, virtualVideoConversationSize);
+//            this.homeOffice = null;
+//            this.openSpaceOffice = null;
+//        }
         if(officeType == OfficeType.HOME){
-            this.homeOffice = new HomeOffice(this, homeWorkingDaysPerWeek);
-            this.virtualOffice = null;
-            this.openSpaceOffice = null;
+            this.homeWorkingDaysPerWeek = homeWorkingDaysPerWeek;
+            this.virtualVideoConversationSize = 0;
+            this.openNumberOfSeats = 0;
         }
         if(officeType == OfficeType.OPEN_SPACE){
-            this.openSpaceOffice = new OpenSpaceOffice(this, openNumberOfSeats);
-            this.virtualOffice = null;
-            this.homeOffice = null;
+            this.openNumberOfSeats = openNumberOfSeats;
+            this.virtualVideoConversationSize = 0;
+            this.homeWorkingDaysPerWeek = 0;
         }
         if(officeType == OfficeType.VIRTUAL){
-            this.virtualOffice = new VirtualOffice(this, virtualVideoConversationSize);
-            this.homeOffice = null;
-            this.openSpaceOffice = null;
+            this.virtualVideoConversationSize = virtualVideoConversationSize;
+            this.homeWorkingDaysPerWeek = 0;
+            this.openNumberOfSeats = 0;
         }
+
     }
 
     public void becomeHomeOffice(int homeWorkingDaysPerWeek) {
         if (!isHomeOffice()) {
-            this.homeOffice = new HomeOffice(this, homeWorkingDaysPerWeek);
-            this.openSpaceOffice = null;
-            this.virtualOffice = null;
+            this.homeWorkingDaysPerWeek = homeWorkingDaysPerWeek;
+            this.virtualVideoConversationSize = 0;
+            this.openNumberOfSeats = 0;
         }
     }
 
     public void becomeOpenOffice(int openNumberOfSeats) {
         if (!isOpenSpaceOffice()) {
-            this.openSpaceOffice = new OpenSpaceOffice(this, openNumberOfSeats);
-            this.homeOffice = null;
-            this.virtualOffice = null;
+            this.openNumberOfSeats = openNumberOfSeats;
+            this.virtualVideoConversationSize = 0;
+            this.homeWorkingDaysPerWeek = 0;
         }
     }
 
     public void becomeVirtualOffice(int virtualVideoConversationSize) {
         if (!isVirtualOffice()) {
-            this.virtualOffice = new VirtualOffice(this, virtualVideoConversationSize);
-            this.homeOffice = null;
-            this.openSpaceOffice = null;
+            this.virtualVideoConversationSize = virtualVideoConversationSize;
+            this.homeWorkingDaysPerWeek = 0;
+            this.openNumberOfSeats = 0;
         }
     }
 
     public boolean isHomeOffice() {
-        if (this.homeOffice != null) {
+        if (this.homeWorkingDaysPerWeek != 0) {
             return true;
         }
         return false;
     }
 
     public boolean isVirtualOffice() {
-        if (this.virtualOffice != null) {
+        if (this.virtualVideoConversationSize != 0) {
             return true;
         }
         return false;
     }
 
     public boolean isOpenSpaceOffice() {
-        if (this.openSpaceOffice != null) {
+        if (this.openNumberOfSeats != 0) {
             return true;
         }
         return false;
@@ -145,13 +180,64 @@ public class Office {
         }
     }
 
-    public void addInvoice(Invoice invoice){
-        setInvoice(invoice);
-        invoice.addOffice(this);
-    }
     public void removeInvoice(Invoice invoice){
-        setInvoice(null);
-        invoice.removeOffice(this);
+        if(this.getInvoice() != null){
+            setInvoice(null);
+            invoice.removeOffice();
+        }
     }
+
+    public void addOwner(Owner owner) {
+        if (!owners.contains(owner)) {
+            owners.add(owner);
+            owner.addOffice(this);
+        }
+    }
+
+    public void removeOwner(Owner owner){
+        if(!owners.contains(owner)){
+            owners.remove(owner);
+            owner.removeOffice(this);
+        }
+    }
+
+    public void addManagedByOwner(Owner owner) {
+        if(!owners.contains(owner)){
+            throw new IllegalArgumentException("Owner " +owner.getName() +" must be an owner of "+getName());
+        }
+        if(!managedByOwners.contains(owner)){
+            managedByOwners.add(owner);
+            owner.addOwnerManagesOffice(this);
+        }
+    }
+
+    public void removeManagedByOwner(Owner owner){
+        if(!managedByOwners.contains(owner)){
+            managedByOwners.remove(owner);
+            owner.removeOwnerManagesOffices(this);
+        }
+    }
+
+
+    public void setLocation(Location location) {
+        if(location==null){
+            throw new IllegalArgumentException("Location cannot be null");
+        }
+        location.addOffice(this);
+        this.location = location;
+
+    }
+
+    public void removeLocation() {
+        if(this.location == null)
+            return;
+        this.location.removeOffice(this);
+        this.location = null;
+    }
+
+    public boolean hasLocation() {
+        return this.location !=null;
+    }
+
 
 }

@@ -9,6 +9,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -34,6 +36,9 @@ public class Rental {
     @ManyToOne
     private Customer customer;
 
+    @OneToMany
+    private Set<Comment> comments = new HashSet<>();
+
     public Rental(@NotBlank String name, @NotNull LocalDate start_date, @NotNull LocalDate end_date, Customer customer, Office office) {
         this.name = name;
         this.start_date = start_date;
@@ -55,6 +60,22 @@ public class Rental {
             }
         }
     }
+
+    public void addComment(Comment comment){
+        comments.add(comment);
+        comment.addToRental(this);
+    }
+
+    public void removeComment(Comment comment){
+        if(comments.contains(comment)) {
+            comments.remove(comment);
+            comment.removeFromRental();
+        }
+        else{
+            System.out.println("No such comment");
+        }
+    }
+
 
 
 }

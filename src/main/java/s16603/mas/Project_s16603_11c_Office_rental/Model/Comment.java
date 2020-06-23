@@ -28,9 +28,26 @@ public class Comment {
     @NotBlank
     private String text;
 
+    @ManyToOne
+    private Rental rental;
+
     public Comment(@NotBlank String name, @NotNull LocalDate date, @NotBlank String text) {
         this.name = name;
         this.date = date;
         this.text = text;
+    }
+
+    public void addToRental(Rental rental){
+        rental.addComment(this);
+        setRental(rental);
+    }
+    public void removeFromRental(){
+        if(this.getRental() != null){
+            setRental(null);
+            this.rental.removeComment(this);
+        }
+        else {
+            System.out.println("No such rental");
+        }
     }
 }

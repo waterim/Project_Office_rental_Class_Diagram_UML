@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long invoiceId;
 
-    @NotBlank
+    @NotNull
     private double total;
 
     @OneToOne
@@ -31,14 +32,11 @@ public class Invoice {
     @OneToMany
     private Set<Payment> paymentSet = new HashSet<>();
 
-    public Invoice(@NotBlank double total) {
+    public Invoice(@NotNull double total) {
         this.total = total;
     }
 
-    public void addOffice(Office office){
-        this.office.addInvoice(this);
-        setOffice(office);
-    }
+
     public void removeOffice(){
         if(this.office != null){
             this.office.removeInvoice(this);
@@ -51,7 +49,7 @@ public class Invoice {
 
     public void addPayment(Payment payment){
         paymentSet.add(payment);
-        payment.addInvoice(this);
+        payment.setInvoice(this);
     }
 
     public void removePayment(Payment payment){
