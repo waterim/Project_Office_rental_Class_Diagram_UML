@@ -16,7 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+
 @Table(name="owner")
 public class Owner extends Person{
 

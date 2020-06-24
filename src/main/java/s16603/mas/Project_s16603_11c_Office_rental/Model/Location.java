@@ -15,7 +15,7 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString
+
 @Table(name="location")
 public class Location {
 
@@ -53,5 +53,14 @@ public class Location {
             officeSet.remove(office);
             office.removeLocation();
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "locationId=" + locationId +
+                ", street='" + street + '\'' +
+                ", building='" + building + '\'' +
+                '}';
     }
 }

@@ -22,7 +22,7 @@ public class Customer extends Person{
 
     private int numberOfOffices;
 
-    @NotBlank(message = "level of privilege can't be blank")
+    @NotNull(message = "level of privilege can't be blank")
     private int levelOfPrivilege;
 
     @OneToMany
@@ -37,7 +37,7 @@ public class Customer extends Person{
 //    private Employee employee;
 //    private Owner owner;
 
-    public Customer(@NotBlank(message = "Name can't be blank") String name, @NotBlank(message = "Surname can't be blank") String surname, @NotBlank(message = "Phone can't be blank") String phone, @NotNull(message = "Date of birth can't be blank") LocalDate dateOfBirth, int numberOfOffices, @NotBlank(message = "level of privilege can't be blank") int levelOfPrivilege) {
+    public Customer(@NotBlank(message = "Name can't be blank") String name, @NotBlank(message = "Surname can't be blank") String surname, @NotBlank(message = "Phone can't be blank") String phone, @NotNull(message = "Date of birth can't be blank") LocalDate dateOfBirth, int numberOfOffices, @NotNull(message = "level of privilege can't be blank") int levelOfPrivilege) {
         super(name, surname, phone, dateOfBirth);
         this.numberOfOffices = numberOfOffices;
         this.levelOfPrivilege = levelOfPrivilege;

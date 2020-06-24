@@ -239,5 +239,16 @@ public class Office {
         return this.location !=null;
     }
 
-
+    @Override
+    public String toString() {
+        return "Office{" +
+                "name='" + name + '\'' +
+                ", price=" + price +
+                ", description='" + description + '\'' +
+                ", virtualVideoConversationSize=" + virtualVideoConversationSize +
+                ", openNumberOfSeats=" + openNumberOfSeats +
+                ", homeWorkingDaysPerWeek=" + homeWorkingDaysPerWeek +
+                ", officeStatus=" + officeStatus +
+                '}';
+    }
 }
